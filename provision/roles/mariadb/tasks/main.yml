@@ -1,0 +1,42 @@
+---
+- name: Transfer MariaDB.repo template
+  copy:
+    src=roles/mariadb/files/repos/MariaDB.repo
+    dest=/etc/yum.repos.d/MariaDB.repo
+    owner=root
+    group=root
+    mode=0644
+  tags:
+    - mariadb
+
+- name: be sure MariaDB is installed
+  yum: name={{ item }} state=present
+  with_items:
+    - MariaDB-server
+    - MariaDB-client
+    - MySQL-python
+  tags:
+    - mariadb
+
+- name: be sure mysqld is running and enabled
+  service: name=mysql state=started enabled=yes
+  tags:
+    - mariadb
+
+- name: drop test database
+  mysql_db: name=test state=absent
+
+- name: delete anonymous user
+  mysql_user: name='' state=absent
+  register: result
+  ignore_errors: true
+
+- name: create db user
+  mysql_user: name={{ mysql_user_name }} password={{ mysql_user_password }} priv=*.*:ALL
+
+- name: create db
+  mysql_db: name={{ mysql_db_name }} state=present
+
+# - name: edit my.cnf
+#   template: src=my.cnf dest=/etc/my.cnf mode=0600
+#   notify: restart mysqld

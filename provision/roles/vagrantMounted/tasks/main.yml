@@ -1,0 +1,3 @@
+- name: vagrant up直後にhttpdを起動させる
+  template: src=vagrant-mounted.conf dest=/etc/init.d/vagrant-mounted.conf mode=0644
+  notify: restart httpd

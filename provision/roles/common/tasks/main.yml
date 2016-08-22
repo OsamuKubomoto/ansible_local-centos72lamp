@@ -1,0 +1,24 @@
+- name: be sure libselinux-python is installed
+  yum: name=libselinux-python state=installed
+
+- name: be sure SELinux is disabled
+  become: yes
+  selinux: state=disabled
+
+- name: be sure firewalld is stopped
+  service: name=firewalld state=stopped
+
+- name: change timezone to Asia/Tokyo
+  become: yes
+  file: src=/usr/share/zoneinfo/Asia/Tokyo dest=/etc/localtime state=link force=true
+
+- name: be sure wget and vim is installed
+  yum: name={{ item }} state=present
+  with_items:
+    - wget
+    - vim
+    - patch
+    - gcc
+    - gcc-c++
+    - tree
+    - unzip
