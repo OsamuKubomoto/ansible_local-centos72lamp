@@ -26,4 +26,8 @@ Vagrant.configure(2) do |config|
     ansible.inventory_path = "provision/hosts"
   end
 
+  config.vm.provision :shell, run: "always", :inline => <<-EOT
+    sudo systemctl restart httpd
+  EOT
+
 end
